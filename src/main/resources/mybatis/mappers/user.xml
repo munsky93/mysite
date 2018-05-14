@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">          <!-- namepace는 전체 페이지 이름이다 -->
+
+	<insert id="insert" parameterType="com.javaex.vo.UserVo">     
+        <![CDATA[
+        insert into users
+        values (seq_user_no.nextval,
+                #{name},    
+                #{email},
+                #{password},
+                #{gender}
+         )
+       ]]>
+	</insert>
+
+	<select id="selectUserByEmailPw" parameterType="map"
+		resultType="com.javaex.vo.UserVo">
+    <![CDATA[
+       select no, name
+       from users
+       where email=#{email}
+       and password=#{password}
+    ]]>
+	</select>
+
+	<select id="getUserInfo" parameterType="int" resultType="com.javaex.vo.UserVo">
+    <![CDATA[
+       select *
+       from users
+       where no=#{no}
+    ]]>
+	</select>
+
+
+	
+	<select id="getidcheck" parameterType="String" resultType="com.javaex.vo.UserVo">       <!-- resultType : 다시 vo로 보내준다 -->
+	 <![CDATA[
+       select *
+       from users
+       where email=#{email}
+    ]]>
+	</select>
+	
+	
+	
+	
+
+	<update id="userModify" parameterType="com.javaex.vo.UserVo">
+    <![CDATA[
+       update users set
+       no=#{no},
+       name=#{name},
+       password=#{password},
+       gender=#{gender}
+       where no=#{no}
+       ]]>
+
+	</update>
+</mapper>

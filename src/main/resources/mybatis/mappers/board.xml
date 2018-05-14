@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+
+
+     <select id="selectAll" resultType="com.javaex.vo.BoardVo" parameterType="map">
+         <![CDATA[
+			select rnum, no, title, hit, reg_date, user_no, name
+			from (select rownum rnum, no, title, hit, reg_date, user_no, name
+      			  from (select b.no, b.title, b.hit, b.reg_date, b.user_no, u.name
+               		    from board b, users u
+                        where b.user_no = u.no 
+ 
+        ]]>
+     <if test="kwd != null and kwd !=''"> and title like '%'|| #{kwd} ||'%' </if>
+         <![CDATA[
+            order by no desc) t_o) t_or
+            where rnum > #{startRnum} and rnum <= #{endRnum}
+		 ]]>
+    </select>
+    
+    <select id="totalCount" resultType="int" parameterType="string">
+        <![CDATA[
+			select count(*)
+			from board
+		]]>
+    <if test="_parameter != null and _parameter !=''"> where title like '%'|| #{kwd} ||'%' </if>
+    </select>
+
+	<select id="getList" resultType="com.javaex.vo.BoardVo">
+		<![CDATA[
+			select 	board.no no, 
+					board.title title,
+					board.content content,
+					board.hit hit,
+					board.reg_date reg_date,
+					board.user_no user_no,
+					users.name name
+			from board,users 
+			where board.user_no=users.no 
+			order by board.no desc
+		]]>
+	</select>
+	
+	<insert id="write" parameterType="com.javaex.vo.BoardVo">
+		<![CDATA[
+			insert into board 
+			values(seq_board_no.nextval,
+					#{title},
+					#{content},
+					0,
+					sysdate,
+					#{user_no})	
+		]]>
+	</insert>
+	
+	<select id="view" parameterType="int" resultType="com.javaex.vo.BoardVo">
+		<![CDATA[
+			select * 
+			from board,users 
+			where board.user_no=users.no 
+			and board.no=#{no}
+			order by board.no desc
+		]]>
+	</select>
+	
+	<update id="hitup" parameterType="int">
+		<![CDATA[
+			update board
+			set hit=hit+1
+			where no=#{no}
+		]]>
+	</update>
+	
+	<update id="modify" parameterType="com.javaex.vo.BoardVo">
+		<![CDATA[
+			update board set 
+			title=#{title},
+			content=#{content}
+			where no=#{no}
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from board 
+			where no=#{no}
+		]]>
+	</delete>
+	
+	<select id="search" parameterType="String" resultType="com.javaex.vo.BoardVo">
+		<![CDATA[
+			select * 
+			from 	(select *
+					from board
+					where title like #{kwd} or content like #{kwd}) board , users 
+			where board.user_no=users.no 
+			order by board.no desc
+		]]>
+	</select>
+	
+</mapper>
